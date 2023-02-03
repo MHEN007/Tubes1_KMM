@@ -91,9 +91,18 @@ public class BotService {
                             .sorted(Comparator.comparing(filtWormhole -> getDistanceBetween(bot, filtWormhole)))
                             .collect(Collectors.toList());
                 playerAction.heading = getHeadingBetween(filterWormhole.get(0));
+            
+                System.out.println("Cari Item yuk! Tapi.. jangan kena wormhole");
             }else{
                 playerAction.heading = getHeadingBetween(friendlyObjects.get(0));
+                System.out.println("Cari Item yuk!");
             }
+
+            /* Kemungkinan Posisi Keempat: Dekat dengan Player Lain
+             * Langkah yang diambil: Periksa dulu size diri dan size musuh
+             * Kalau size diri > size player lain: Serang player terdekat
+             * Kalau size diri < size player lain: Menghindar dl aja, makan food dl
+             */
         }
 
         this.playerAction = playerAction;
