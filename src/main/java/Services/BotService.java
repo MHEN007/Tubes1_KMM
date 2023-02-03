@@ -103,6 +103,17 @@ public class BotService {
              * Kalau size diri > size player lain: Serang player terdekat
              * Kalau size diri < size player lain: Menghindar dl aja, makan food dl
              */
+
+            var nearOtherPlayer = gameState.getGameObjects()
+                            .stream().filter(otherPlayer -> otherPlayer.getGameObjectType() == ObjectTypes.PLAYER)
+                            .sorted(Comparator.comparing(obstacle -> getDistanceBetween(bot, obstacle)))
+                            .collect(Collectors.toList());
+            if(bot.getSize() < nearOtherPlayer.get(0).getSize()) {
+                System.out.println("Waktunya menghindari musuh!");
+                playerAction.heading = (playerAction.heading + 180)%360;
+            } else if (bot.getSize() > nearOtherPlayer.get(0).getSize()) {
+                playerAction.heading = getHeadingBetween(nearOtherPlayer.get(0));
+            }
         }
 
         this.playerAction = playerAction;
