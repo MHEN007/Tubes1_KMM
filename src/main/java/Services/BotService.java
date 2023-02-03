@@ -67,12 +67,12 @@ public class BotService {
             double jarakObjKePusat = Math.sqrt(listOfObstacles.get(0).getPosition().getX() * listOfObstacles.get(0).getPosition().getX() + listOfObstacles.get(0).getPosition().getY() + listOfObstacles.get(0).getPosition().getY());
             if(jarakKePusat + (1.5 * bot.getSize()) == jarakObjKePusat){
                 System.out.println("Waktunya menghindari Objek!");
-                playerAction.heading = (playerAction.heading + 180)%360;
+                playerAction.heading = (playerAction.heading + 180) % 360;
             }
 
             /* Kemungkinan Posisi Ketiga: Dekat dengan Supernova, food, dan wormhole
              * Langkah yang diambil: 
-             * Kalau ukuran diri > 10 (ambil batas aman) Boleh semuanya
+             * Kalau ukuran diri >= 10 (ambil batas aman) Boleh semuanya
              * Kalau ukuran diri < 10, ambil supernova dan food aja. Jangan ke wormhole
             */
 
@@ -83,10 +83,10 @@ public class BotService {
                                                 || friendly.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP
                                                 || friendly.getGameObjectType() == ObjectTypes.WORMHOLE
                             )
-                            .sorted(Comparator.comparing(obstacle -> getDistanceBetween(bot, obstacle)))
+                            .sorted(Comparator.comparing(friendly -> getDistanceBetween(bot, friendly)))
                             .collect(Collectors.toList());
 
-            if(bot.getSize() < 10){
+            if(bot.getSize() < 50){
                 var filterWormhole = friendlyObjects.stream().filter(filtWormhole -> filtWormhole.getGameObjectType() != ObjectTypes.WORMHOLE)
                             .sorted(Comparator.comparing(filtWormhole -> getDistanceBetween(bot, filtWormhole)))
                             .collect(Collectors.toList());
@@ -105,14 +105,19 @@ public class BotService {
              */
 
             var nearOtherPlayer = gameState.getGameObjects()
-                            .stream().filter(otherPlayer -> otherPlayer.getGameObjectType() == ObjectTypes.PLAYER)
-                            .sorted(Comparator.comparing(obstacle -> getDistanceBetween(bot, obstacle)))
+                            .stream().filter(otherPlayer -> otherPlayer.getId() != bot.getId())
+                            .sorted(Comparator.comparing(otherPlayer -> getDistanceBetween(bot, otherPlayer)))
                             .collect(Collectors.toList());
-            if(bot.getSize() < nearOtherPlayer.get(0).getSize()) {
+
+            if(bot.getSize() <= nearOtherPlayer.get(0).getSize()) {
                 System.out.println("Waktunya menghindari musuh!");
-                playerAction.heading = (playerAction.heading + 180)%360;
-            } else if (bot.getSize() > nearOtherPlayer.get(0).getSize()) {
+                playerAction.heading = (nearOtherPlayer.get(0).currentHeading + 90) % 360;
+
+                /* Buat pertimbangan pakai shield kalau ada */
+            } else {
+                System.out.println("Waktunya menyerang musuh!");
                 playerAction.heading = getHeadingBetween(nearOtherPlayer.get(0));
+                /* Buat pertimbangan pakai weapon kalau jaraknya kejauhan */
             }
         }
 
