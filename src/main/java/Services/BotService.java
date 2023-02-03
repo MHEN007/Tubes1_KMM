@@ -119,6 +119,23 @@ public class BotService {
                 playerAction.heading = getHeadingBetween(nearOtherPlayer.get(0));
                 /* Buat pertimbangan pakai weapon kalau jaraknya kejauhan */
             }
+
+            /* Kemungkinan Posisi Torpedo Salvo 
+             * Langkah yang diambil: Mendeteksi lintasan torpedo salvo dari musuh
+             * Kalau sedang ada di lintasan torpedo salve : Menghindar dari lintasan
+            */
+
+            var detectTorpedo = gameState.getGameObjects()
+                        .stream().filter(SALVO-> SALVO.getGameObjectType() == ObjectTypes.TORPEDO_SALVO)
+                        .sorted(Comparator.comparing(SALVO -> getDistanceBetween(bot, SALVO)))
+                        .collect(Collectors.toList());  
+            if(bot.getSize() < detectTorpedo.get(0).getSize()){
+                System.out.println("Awas ada salvo!");
+                playerAction.heading = (playerAction.heading + 180)%360;
+            }
+            else if (bot.getSize() > detectTorpedo.get(0).getSize()){
+                playerAction.heading = getHeadingBetween(detectTorpedo.get(0));
+            }
         }
 
         this.playerAction = playerAction;
