@@ -131,8 +131,17 @@ public class BotService {
                         .collect(Collectors.toList()); 
             double jarakTorpedoKePusat = Math.sqrt(detectTorpedo.get(0).getPosition().getX() * detectTorpedo.get(0).getPosition().getX() + detectTorpedo.get(0).getPosition().getY() + detectTorpedo.get(0).getPosition().getY());
             if(jarakKePusat + (1.5 * bot.getSize()) == jarakTorpedoKePusat){
-                System.out.println("Ada salvo! Pergi!");
-                playerAction.heading = (playerAction.heading + 180)%360;
+                if(bot.getSize() < 50){
+                    System.out.println("Ada salvo! Pergi!");
+                    playerAction.heading = (playerAction.heading + 180)%360;
+                }
+                else {
+                    System.out.println("Ada salvo! Pasang shield");
+                    //masang shield
+                }
+            }
+            else {
+                playerAction.action = PlayerActions.FORWARD;
             }
         }
 
