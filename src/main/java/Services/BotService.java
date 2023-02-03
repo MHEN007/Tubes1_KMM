@@ -121,20 +121,18 @@ public class BotService {
             }
 
             /* Kemungkinan Posisi Torpedo Salvo 
-             * Langkah yang diambil: Mendeteksi lintasan torpedo salvo dari musuh
-             * Kalau sedang ada di lintasan torpedo salve : Menghindar dari lintasan
+             * Langkah yang diambil: Mendeteksi torpedo salvo dari musuh
+             * Kalau sedang ada di lintasan torpedo salve : Menghindar dari torpedo salvo
             */
 
             var detectTorpedo = gameState.getGameObjects()
                         .stream().filter(SALVO-> SALVO.getGameObjectType() == ObjectTypes.TORPEDO_SALVO)
                         .sorted(Comparator.comparing(SALVO -> getDistanceBetween(bot, SALVO)))
-                        .collect(Collectors.toList());  
-            if(bot.getSize() < detectTorpedo.get(0).getSize()){
-                System.out.println("Awas ada salvo!");
+                        .collect(Collectors.toList()); 
+            double jarakTorpedoKePusat = Math.sqrt(detectTorpedo.get(0).getPosition().getX() * detectTorpedo.get(0).getPosition().getX() + detectTorpedo.get(0).getPosition().getY() + detectTorpedo.get(0).getPosition().getY());
+            if(jarakKePusat + (1.5 * bot.getSize()) == jarakTorpedoKePusat){
+                System.out.println("Ada salvo! Pergi!");
                 playerAction.heading = (playerAction.heading + 180)%360;
-            }
-            else if (bot.getSize() > detectTorpedo.get(0).getSize()){
-                playerAction.heading = getHeadingBetween(detectTorpedo.get(0));
             }
         }
 
