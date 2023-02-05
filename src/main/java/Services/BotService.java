@@ -49,6 +49,11 @@ public class BotService {
             var prio = gameState.getGameObjects().stream()
                 .sorted(Comparator.comparing(all -> getDistanceBetween(all, bot)))
                 .collect(Collectors.toList());
+
+            var players = gameState.getPlayerGameObjects().stream()
+                .filter(player -> player.getId() != this.bot.getId() && player.getGameObjectType() == ObjectTypes.PLAYER)
+                .sorted(Comparator.comparing(player -> getDistanceBetween(player, bot)))
+                .collect(Collectors.toList());
             
             /* GREEDY BY POSITION AND OBJECT TYPE */
             /* Berdasarkan posisi terdekat kemudian 
@@ -62,12 +67,13 @@ public class BotService {
                 playerAction.action = PlayerActions.STOPAFTERBURNER;
             }
 
-            if (prio.get(0).getId() != this.bot.getId() && prio.get(0).getGameObjectType() == ObjectTypes.PLAYER) {
-                if(prio.get(0).getSize() < this.bot.getSize()) {
-                    playerAction.heading = getHeadingBetween(prio.get(0));
+            if (getDistanceBetween(players.get(0), this.bot) < getDistanceBetween(prio.get(0), this.bot)) {
+                System.out.println("ADA PLAYER DEKATKU!");
+                if(players.get(0).getSize() < this.bot.getSize()) {
+                    playerAction.heading = getHeadingBetween(players.get(0));
                     System.out.println("Serang musuh!");
                 }else{
-                    playerAction.heading = prio.get(0).currentHeading;
+                    playerAction.heading = (players.get(0).currentHeading + 180) % 360;
                     System.out.println("Kabur dari musuh!");
                 }
             } else if(prio.get(0).getGameObjectType() == ObjectTypes.FOOD){
