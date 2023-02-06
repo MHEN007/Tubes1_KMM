@@ -69,10 +69,6 @@ public class BotService {
                 .filter(torpedo -> torpedo.getGameObjectType() == ObjectTypes.TORPEDO_SALVO && torpedo.currentHeading != this.bot.currentHeading)
                 .sorted(Comparator.comparing(torpedo -> getDistanceBetween(this.bot, torpedo)))
                 .collect(Collectors.toList());
-
-            var teleportList = gameState.getGameObjects().stream()
-                .filter(teleport -> teleport.getGameObjectType() == ObjectTypes.TELEPORTER)
-                .collect(Collectors.toList());
                 
             var supernovabombList = gameState.getGameObjects().stream()
                 .filter(supernova -> supernova.getGameObjectType() == ObjectTypes.SUPERNOVA_BOMB)
@@ -92,16 +88,33 @@ public class BotService {
             playerAction.heading = getHeadingBetween(foodList.get(0));
             System.out.println("MAKAN");
 
+            /* Kalau muncul supernova */
+            if(supernovapickList.size() > 0){
+                playerAction.heading = getHeadingBetween(supernovapickList.get(0));
+                System.out.println("Mengambil supernova");
+                if (this.bot.getSize() > 50) {
+                    if(this.bot.supernovaAvailable){
+                        playerAction.action = PlayerActions.FIRESUPERNOVA;
+                        System.out.print("MENEMBAK SUPERNOVA");
+                        supernovaTick = gameState.getWorld().getCurrentTick();
+                        if (gameState.getWorld().getCurrentTick() - supernovaTick >= 20) {
+                            playerAction.action = PlayerActions.DETONATESUPERNOVA;
+                            System.out.print("MELEDUG");
+                        }
+                    }
+                }
+            }
+
             /* Kondisi jika ada player obstacle dekat dengan kita 
-             * Putar setiap 30 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
+             * Putar setiap 90 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
             */
             if(getDistanceBetween(this.bot, gasList.get(0)) < 50 || getDistanceBetween(this.bot, astList.get(0)) < 50 ) {
                 System.out.println("MENGHINDAR DARI GAS CLOUD / ASTEROID");
-                playerAction.heading = (playerAction.getHeading() + 30) % 360;
+                playerAction.heading = (playerAction.getHeading() + 90) % 360;
             }
 
             /* Kondisi kalau ada player lain dekat dengan kita */
-            if(getDistanceBetween(this.bot, enemyList.get(0)) < 150) {
+            if(getDistanceBetween(this.bot, enemyList.get(0)) <= 200) {
                 System.out.println("ADA PLAYER DEKAT KU");
                 if(burner == true)
                 {
@@ -127,7 +140,7 @@ public class BotService {
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
                     System.out.println("KABUR");
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
-                    if(this.bot.getSize() > 100)
+                    if(this.bot.getSize() > 50 || getDistanceBetween(enemyList.get(0), bot) <= 30)
                     {
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
@@ -145,7 +158,7 @@ public class BotService {
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     System.out.println("SERANG");
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
-                    if(this.bot.getSize() > 50) {
+                    if(this.bot.getSize() > 50 && enemyList.get(0).getSize() < 50) {
                         System.out.println("TEMBAK TORPEDO");
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                     }
@@ -165,7 +178,7 @@ public class BotService {
                     }
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
                     System.out.println("KABUR, CARI MAKAN DULU");
-                    playerAction.heading = getHeadingBetween(foodList.get(0));
+                    playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 180) % 360;
                     if(getDistanceBetween(enemyList.get(0), bot) < 100){
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
@@ -187,13 +200,6 @@ public class BotService {
                     playerAction.action = PlayerActions.ACTIVATESHIELD;
                 }
             }
-            
-            /* Kondisi jika posisi dekat dengan edge of the world! 
-                Cek apakah ada di edge atau tidak */
-            if(getDistanceBetween(this.bot, worldCenter)  + (1.5 * this.bot.getSize()) >= gameState.getWorld().radius){
-                playerAction.heading = getHeadingBetween(worldCenter);
-                System.out.println("Di ujung peta. Kembali ke pusat!");
-            }
 
             /* Kondisi ketika supernova muncul */
             if(supernovabombList.size() > 0){
@@ -201,20 +207,11 @@ public class BotService {
                 System.out.println("Menghindar dari supernova");
             }
 
-            if(supernovapickList.size() > 0){
-                playerAction.heading = getHeadingBetween(supernovapickList.get(0));
-                System.out.println("Mengambil supernova");
-                if (this.bot.getSize() > 50) {
-                    if(this.bot.supernovaAvailable){
-                        playerAction.action = PlayerActions.FIRESUPERNOVA;
-                        System.out.print("MENEMBAK SUPERNOVA");
-                        supernovaTick = gameState.getWorld().getCurrentTick();
-                        if (gameState.getWorld().getCurrentTick() - supernovaTick >= 20) {
-                            playerAction.action = PlayerActions.DETONATESUPERNOVA;
-                            System.out.print("MELEDUG");
-                        }
-                    }
-                }
+            /* Kondisi jika posisi dekat dengan edge of the world! 
+                Cek apakah ada di edge atau tidak */
+            if(getDistanceBetween(this.bot, worldCenter)  + (1.5 * this.bot.getSize()) >= gameState.getWorld().radius){
+                playerAction.heading = getHeadingBetween(worldCenter);
+                System.out.println("Di ujung peta. Kembali ke pusat!");
             }
 
         }
