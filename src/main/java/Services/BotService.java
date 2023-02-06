@@ -11,7 +11,6 @@ public class BotService {
     private PlayerAction playerAction;
     private GameState gameState;
     private GameObject worldCenter;
-    private boolean flag = false;
     private boolean burner = false;
     private int shieldTick = 0;
     private int teleportTick = 0;
@@ -104,11 +103,6 @@ public class BotService {
             /* Kondisi kalau ada player lain dekat dengan kita */
             if(getDistanceBetween(this.bot, enemyList.get(0)) < 150) {
                 System.out.println("ADA PLAYER DEKAT KU");
-                if (flag == true) {
-                    flag = false;
-                    playerAction.action = PlayerActions.TELEPORT;
-                    System.out.println("YEY BERHASIL TELEPORT");
-                }
                 if(burner == true)
                 {
                     burner = false;
@@ -117,8 +111,17 @@ public class BotService {
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
                     if(this.bot.getSize() > 100 || getDistanceBetween(enemyList.get(0), bot) < 50){
-                        playerAction.action = PlayerActions.FIRETELEPORT;
-                        flag = true;
+                        if(teleportTick == 0){
+                            playerAction.action = PlayerActions.FIRETELEPORT;
+                            teleportTick = 1;
+                        }else if(teleportTick >= 1 && teleportTick < 10){
+                            teleportTick++;
+                        }else if(teleportTick == 10){
+                            teleportTick = 0; // reset teleportnya
+                            /* Teleport  */
+                            playerAction.action = PlayerActions.TELEPORT;
+                            System.out.println("YEY BERHASIL TELEPORT");
+                        }
                     }
                     System.out.println("SERANG");
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
@@ -151,9 +154,9 @@ public class BotService {
                         if(teleportTick == 0){
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             teleportTick = 1;
-                        }else if(teleportTick >= 1 && teleportTick < 5){
+                        }else if(teleportTick >= 1 && teleportTick < 10){
                             teleportTick++;
-                        }else if(teleportTick == 5){
+                        }else if(teleportTick == 10){
                             teleportTick = 0; // reset teleportnya
                             /* Teleport  */
                             playerAction.action = PlayerActions.TELEPORT;
