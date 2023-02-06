@@ -11,7 +11,7 @@ public class BotService {
     private PlayerAction playerAction;
     private GameState gameState;
     private GameObject worldCenter;
-    private int burner; // 0 = mati, 1 nyala
+    private boolean burner = false;
 
     public BotService() {
         this.playerAction = new PlayerAction();
@@ -40,57 +40,93 @@ public class BotService {
         worldCenter = new GameObject(null, null, null, null, centerPoint, null, null);
         playerAction.action = PlayerActions.FORWARD;
         playerAction.heading = new Random().nextInt(360);
-        System.out.println("TIME TO COMPUTE");
-
+        System.out.println("TIME TO COMPUTE AT TICK " + gameState.getWorld().getCurrentTick());
         if(!this.gameState.getGameObjects().isEmpty()){
-            /* Ambil semua object lalu urutkan berdasarkan jarak 
-             * dengan bot
-            */
-            var prio = gameState.getGameObjects().stream()
-                .sorted(Comparator.comparing(all -> getDistanceBetween(all, bot)))
+            var foodList = gameState.getGameObjects().stream()
+                .filter(food -> food.getGameObjectType() == ObjectTypes.FOOD)
+                .sorted(Comparator.comparing(food -> getDistanceBetween(this.bot, food)))
                 .collect(Collectors.toList());
 
-            var players = gameState.getPlayerGameObjects().stream()
-                .filter(player -> player.getId() != this.bot.getId() && player.getGameObjectType() == ObjectTypes.PLAYER)
-                .sorted(Comparator.comparing(player -> getDistanceBetween(player, bot)))
+            var gasList = gameState.getGameObjects().stream()
+                .filter(obs -> obs.getGameObjectType() == ObjectTypes.GAS_CLOUD)
+                .sorted(Comparator.comparing(obs -> getDistanceBetween(this.bot, obs)))
+                .collect(Collectors.toList());
+
+            var astList = gameState.getGameObjects().stream()
+                .filter(ast -> ast.getGameObjectType() == ObjectTypes.ASTEROID_FIELD)
+                .sorted(Comparator.comparing(ast -> getDistanceBetween(this.bot, ast)))
                 .collect(Collectors.toList());
             
-            /* GREEDY BY POSITION AND OBJECT TYPE */
-            /* Berdasarkan posisi terdekat kemudian 
-             * periksa tipe dari object tsb.
-             * Langkah berikutnya tergantung dari tipe objectnya
-             */
+            var enemyList = gameState.getPlayerGameObjects().stream()
+                .filter(enemy -> enemy.getId() != this.bot.getId())
+                .sorted(Comparator.comparing(enemy -> getDistanceBetween(this.bot, enemy)))
+                .collect(Collectors.toList());
 
-            if(burner == 1)
-            {
-                burner = 0;
-                playerAction.action = PlayerActions.STOPAFTERBURNER;
+            var torpedoList = gameState.getGameObjects().stream()
+                .filter(torpedo -> torpedo.getGameObjectType() == ObjectTypes.TORPEDO_SALVO && torpedo.currentHeading != this.bot.currentHeading)
+                .sorted(Comparator.comparing(torpedo -> getDistanceBetween(this.bot, torpedo)))
+                .collect(Collectors.toList());
+
+            System.out.println("NEAREST ASTEROID " + getDistanceBetween(astList.get(0), bot));
+            System.out.println("NEAREST GAS " +  getDistanceBetween(gasList.get(0), bot));
+            System.out.println("NEAREST PLAYER " + getDistanceBetween(enemyList.get(0), bot));
+
+            /* GREEDY BY POSITION */
+
+            /* Default action, cari makan */
+            playerAction.heading = getHeadingBetween(foodList.get(0));
+            System.out.println("MAKAN");
+
+            /* Kondisi jika ada player obstacle dekat dengan kita 
+             * Putar setiap 30 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
+            */
+            if(getDistanceBetween(this.bot, gasList.get(0)) < 30 || getDistanceBetween(this.bot, astList.get(0)) < 30 ) {
+                System.out.println("MENGHINDAR DARI GAS CLOUD / ASTEROID");
+                playerAction.heading = (playerAction.getHeading() + 30) % 360;
             }
 
-            if (getDistanceBetween(players.get(0), this.bot) < getDistanceBetween(prio.get(0), this.bot)) {
-                System.out.println("ADA PLAYER DEKATKU!");
-                if(players.get(0).getSize() < this.bot.getSize()) {
-                    playerAction.heading = getHeadingBetween(players.get(0));
-                    System.out.println("Serang musuh!");
-                }else{
-                    playerAction.heading = (players.get(0).currentHeading + 180) % 360;
-                    System.out.println("Kabur dari musuh!");
+            /* Kondisi kalau ada player lain dekat dengan kita */
+            if(getDistanceBetween(this.bot, enemyList.get(0)) + (1.5 * this.bot.getSize()) < 100) {
+                System.out.println("ADA PLAYER DEKAT KU");
+                if(enemyList.get(0).getSize() < this.bot.getSize()) {
+                    playerAction.heading = getHeadingBetween(enemyList.get(0));
+                    if(this.bot.getSize() > 100 && getDistanceBetween(enemyList.get(0), bot) < 50){
+                        playerAction.action = PlayerActions.FIRETORPEDOES;
+                    }
+                    System.out.println("SERANG");
+                }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
+                    playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 180) % 360;
+                    System.out.println("KABUR");
                 }
-            } else if(prio.get(0).getGameObjectType() == ObjectTypes.FOOD){
-                playerAction.heading = getHeadingBetween(prio.get(0));
-                System.out.println("Waktunya makan");
-            } else if (prio.get(0).getGameObjectType() == ObjectTypes.ASTEROID_FIELD || prio.get(0).getGameObjectType() == ObjectTypes.GAS_CLOUD){
-                if(getDistanceBetween(prio.get(0), bot) + (1.5*this.bot.getSize()) < 30){
-                    playerAction.heading = getHeadingBetween(worldCenter);
-                    playerAction.action = PlayerActions.STARTAFTERBURNER;
-                    burner = 1;
-                }else{
-                    playerAction.heading = (playerAction.heading + 30) % 360;
-                }
-                System.out.println("Waktunya menghindari asteroid/gas cloud");
             }
 
-            /* Cek apakah ada di edge atau tidak */
+            /* Kalau tersisa cmn dua player lagi */
+            if(enemyList.size() == 1){
+                System.out.println("Tinggal berdua nih!");
+                if(enemyList.get(0).getSize() < this.bot.getSize()) {
+                    playerAction.heading = getHeadingBetween(enemyList.get(0));
+                    if(this.bot.getSize() > 100) {
+                        playerAction.action = PlayerActions.FIRETORPEDOES;
+                    }
+                    System.out.println("SERANG");
+                }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
+                    playerAction.heading = (enemyList.get(0).currentHeading);
+                    if(getDistanceBetween(enemyList.get(0), bot) < 100){
+                        playerAction.action = PlayerActions.STARTAFTERBURNER;
+                        burner = true;
+                    }else{
+                        playerAction.action = PlayerActions.FORWARD;
+                    }
+                    System.out.println("KABUR");
+                }
+                if(burner = true){
+                    burner = false;
+                    playerAction.action = PlayerActions.STOPAFTERBURNER;
+                }
+            }
+            
+            /* Kondisi jika posisi dekat dengan edge of the world! 
+                Cek apakah ada di edge atau tidak */
             if(getDistanceBetween(this.bot, worldCenter)  + (1.5 * this.bot.getSize()) >= gameState.getWorld().radius){
                 playerAction.heading = getHeadingBetween(worldCenter);
                 System.out.println("Di ujung peta. Kembali ke pusat!");
@@ -112,10 +148,6 @@ public class BotService {
     private void updateSelfState() {
         Optional<GameObject> optionalBot = gameState.getPlayerGameObjects().stream().filter(gameObject -> gameObject.id.equals(bot.id)).findAny();
         optionalBot.ifPresent(bot -> this.bot = bot);
-    }
-
-    private int getOppositeDirection(GameObject obj1, GameObject obj2) {
-        return toDegrees(Math.atan2(obj2.getPosition().getY()-obj1.getPosition().getY(), obj2.getPosition().getX()-obj1.getPosition().getX()));
     }
 
     private double getDistanceBetween(GameObject object1, GameObject object2) {
