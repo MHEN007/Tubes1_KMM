@@ -14,6 +14,7 @@ public class BotService {
     private boolean burner = false;
     private int shieldTick = 0;
     private int teleportTick = 0;
+    private int supernovaTick = 0;
 
     public BotService() {
         this.playerAction = new PlayerAction();
@@ -71,6 +72,14 @@ public class BotService {
 
             var teleportList = gameState.getGameObjects().stream()
                 .filter(teleport -> teleport.getGameObjectType() == ObjectTypes.TELEPORTER)
+                .collect(Collectors.toList());
+                
+            var supernovabombList = gameState.getGameObjects().stream()
+                .filter(supernova -> supernova.getGameObjectType() == ObjectTypes.SUPERNOVA_BOMB)
+                .collect(Collectors.toList());
+
+            var supernovapickList = gameState.getGameObjects().stream()
+                .filter(supernova -> supernova.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP)
                 .collect(Collectors.toList());
 
             System.out.println("NEAREST ASTEROID " + getDistanceBetween(astList.get(0), bot));
@@ -173,6 +182,27 @@ public class BotService {
                 playerAction.heading = getHeadingBetween(worldCenter);
                 System.out.println("Di ujung peta. Kembali ke pusat!");
             }
+
+            /* Kondisi ketika supernova muncul */
+            if(supernovabombList.size() > 0){
+                playerAction.heading = (getHeadingBetween(supernovabombList.get(0)) + 90) % 360;
+                System.out.println("Menghindar dari supernova");
+            }
+
+            if(supernovapickList.size() > 0){
+                playerAction.heading = getHeadingBetween(supernovapickList.get(0));
+                System.out.println("Mengambil supernova");
+                if (this.bot.getSize() > 50) {
+                    playerAction.action = PlayerActions.FIRESUPERNOVA;
+                    System.out.print("MENEMBAK SUPERNOVA");
+                    supernovaTick = gameState.getWorld().getCurrentTick();
+                    if (gameState.getWorld().getCurrentTick() - supernovaTick >= 20) {
+                        playerAction.action = PlayerActions.DETONATESUPERNOVA;
+                        System.out.print("MELEDUG");
+                    }
+                }
+            }
+
         }
 
         this.playerAction = playerAction;
