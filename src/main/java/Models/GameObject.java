@@ -11,8 +11,9 @@ public class GameObject {
   public Position position;
   public ObjectTypes gameObjectType;
   public Integer torpedoSalvo;
+  public Boolean supernovaAvailable;
 
-  public GameObject(UUID id, Integer size, Integer speed, Integer currentHeading, Position position, ObjectTypes gameObjectType, Integer torpedoSalvo) {
+  public GameObject(UUID id, Integer size, Integer speed, Integer currentHeading, Position position, ObjectTypes gameObjectType, Integer torpedoSalvo, Boolean supernovaAvailable) {
     this.id = id;
     this.size = size;
     this.speed = speed;
@@ -20,6 +21,7 @@ public class GameObject {
     this.position = position;
     this.gameObjectType = gameObjectType;
     this.torpedoSalvo = torpedoSalvo;
+    this.supernovaAvailable = supernovaAvailable;
   }
 
   public UUID getId() {
@@ -65,6 +67,6 @@ public class GameObject {
   public static GameObject FromStateList(UUID id, List<Integer> stateList)
   {
     Position position = new Position(stateList.get(4), stateList.get(5));
-    return new GameObject(id, stateList.get(0), stateList.get(1), stateList.get(2), position, ObjectTypes.valueOf(stateList.get(3)), stateList.get(6));
+    return new GameObject(id, stateList.get(0), stateList.get(1), stateList.get(2), position, ObjectTypes.valueOf(stateList.get(3)), stateList.get(6), false);
   }
 }

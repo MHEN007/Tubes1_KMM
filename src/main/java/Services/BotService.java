@@ -40,7 +40,7 @@ public class BotService {
 
     public void computeNextPlayerAction(PlayerAction playerAction) {
         Position centerPoint = new Position(0,0);
-        worldCenter = new GameObject(null, null, null, null, centerPoint, null, null);
+        worldCenter = new GameObject(null, null, null, null, centerPoint, null, null, null);
         playerAction.action = PlayerActions.FORWARD;
         playerAction.heading = new Random().nextInt(360);
         System.out.println("TIME TO COMPUTE AT TICK " + gameState.getWorld().getCurrentTick());
@@ -158,6 +158,7 @@ public class BotService {
                     if(getDistanceBetween(enemyList.get(0), bot) < 100){
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
+                        System.out.println("KENTUTTTT");
                     }
                     if(this.bot.getSize() > 50) {
                         System.out.println("TEMBAK TORPEDO");
@@ -193,12 +194,14 @@ public class BotService {
                 playerAction.heading = getHeadingBetween(supernovapickList.get(0));
                 System.out.println("Mengambil supernova");
                 if (this.bot.getSize() > 50) {
-                    playerAction.action = PlayerActions.FIRESUPERNOVA;
-                    System.out.print("MENEMBAK SUPERNOVA");
-                    supernovaTick = gameState.getWorld().getCurrentTick();
-                    if (gameState.getWorld().getCurrentTick() - supernovaTick >= 20) {
-                        playerAction.action = PlayerActions.DETONATESUPERNOVA;
-                        System.out.print("MELEDUG");
+                    if(this.bot.supernovaAvailable){
+                        playerAction.action = PlayerActions.FIRESUPERNOVA;
+                        System.out.print("MENEMBAK SUPERNOVA");
+                        supernovaTick = gameState.getWorld().getCurrentTick();
+                        if (gameState.getWorld().getCurrentTick() - supernovaTick >= 20) {
+                            playerAction.action = PlayerActions.DETONATESUPERNOVA;
+                            System.out.print("MELEDUG");
+                        }
                     }
                 }
             }
