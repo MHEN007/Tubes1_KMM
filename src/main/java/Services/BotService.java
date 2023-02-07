@@ -71,11 +71,13 @@ public class BotService {
                 .collect(Collectors.toList());
                 
             var supernovabombList = gameState.getGameObjects().stream()
-                .filter(supernova -> supernova.getGameObjectType() == ObjectTypes.SUPERNOVA_BOMB)
+                .filter(supernovabomb -> supernovabomb.getGameObjectType() == ObjectTypes.SUPERNOVA_BOMB)
+                .sorted(Comparator.comparing(supernovabomb -> getDistanceBetween(this.bot, supernovabomb)))
                 .collect(Collectors.toList());
 
             var supernovapickList = gameState.getGameObjects().stream()
-                .filter(supernova -> supernova.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP)
+                .filter(supernovapick -> supernovapick.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP)
+                .sorted(Comparator.comparing(supernovapick -> getDistanceBetween(this.bot, supernovapick)))
                 .collect(Collectors.toList());
 
             System.out.println("NEAREST ASTEROID " + getDistanceBetween(astList.get(0), bot));
@@ -108,7 +110,7 @@ public class BotService {
             /* Kondisi jika ada player obstacle dekat dengan kita 
              * Putar setiap 90 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
             */
-            if(getDistanceBetween(this.bot, gasList.get(0)) < 50 || getDistanceBetween(this.bot, astList.get(0)) < 50 ) {
+            if(getDistanceBetween(this.bot, gasList.get(0)) < 150 || getDistanceBetween(this.bot, astList.get(0)) < 150 ) {
                 System.out.println("MENGHINDAR DARI GAS CLOUD / ASTEROID");
                 playerAction.heading = (playerAction.getHeading() + 90) % 360;
             }
@@ -197,20 +199,26 @@ public class BotService {
                     if((torpedoList.get(0).currentHeading + 90) % 360 == this.bot.currentHeading){
                         playerAction.heading = (playerAction.heading + 90) % 360;
                         System.out.println("Menghindar dari torpedo lawan");
+                        playerAction.action = PlayerActions.ACTIVATESHIELD;
+                        System.out.println("Activate Shield");
                     }else if ((torpedoList.get(0).currentHeading - 90) % 360 == this.bot.currentHeading){
                         playerAction.heading = (playerAction.heading - 90) % 360;
                         System.out.println("Menghindar dari torpedo lawan");
+                        playerAction.action = PlayerActions.ACTIVATESHIELD;
+                        System.out.println("Activate Shield");
                     }else if((torpedoList.get(0).currentHeading == this.bot.currentHeading)){
                         playerAction.heading = (playerAction.heading + 90) % 360;
                         System.out.println("Menghindar dari torpedo lawan");
-                    }
-                    if(gameState.getWorld().getCurrentTick() - shieldTick >= 20 && this.bot.getSize() > 50){
-                        System.out.println("Activate Shield");
                         playerAction.action = PlayerActions.ACTIVATESHIELD;
-                        shieldTick = 0;
-                    }else{
-                        shieldTick = gameState.getWorld().getCurrentTick();
+                        System.out.println("Activate Shield");
                     }
+                    // if(gameState.getWorld().getCurrentTick() - shieldTick >= 20 && this.bot.getSize() > 50){
+                    //     System.out.println("Activate Shield");
+                    //     playerAction.action = PlayerActions.ACTIVATESHIELD;
+                    //     shieldTick = 0;
+                    // }else{
+                    //     shieldTick = gameState.getWorld().getCurrentTick();
+                    // }
                 }
             }
 
