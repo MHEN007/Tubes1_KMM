@@ -66,7 +66,7 @@ public class BotService {
                 .collect(Collectors.toList());
 
             var torpedoList = gameState.getGameObjects().stream()
-                .filter(torpedo -> torpedo.getGameObjectType() == ObjectTypes.TORPEDO_SALVO && torpedo.currentHeading != this.bot.currentHeading)
+                .filter(torpedo -> torpedo.getGameObjectType() == ObjectTypes.TORPEDO_SALVO)
                 .sorted(Comparator.comparing(torpedo -> getDistanceBetween(this.bot, torpedo)))
                 .collect(Collectors.toList());
                 
@@ -193,11 +193,19 @@ public class BotService {
             }
 
             if(torpedoList.size() > 0){
-                playerAction.heading = (playerAction.heading + 90) % 360;
-                System.out.println("Menghindar dari torpedo");
+                if((torpedoList.get(0).currentHeading + 90) % 360 == this.bot.currentHeading){
+                    playerAction.heading = (playerAction.heading + 90) % 360;
+                    System.out.println("Menghindar dari torpedo lawan");
+                }else if ((torpedoList.get(0).currentHeading - 90) % 360 == this.bot.currentHeading){
+                    playerAction.heading = (playerAction.heading - 90) % 360;
+                    System.out.println("Menghindar dari torpedo lawan");
+                }
                 if(gameState.getWorld().getCurrentTick() - shieldTick >= 20 && this.bot.getSize() > 50){
                     System.out.println("Activate Shield");
                     playerAction.action = PlayerActions.ACTIVATESHIELD;
+                    shieldTick = 0;
+                }else{
+                    shieldTick = gameState.getWorld().getCurrentTick();
                 }
             }
 
@@ -209,7 +217,7 @@ public class BotService {
 
             /* Kondisi jika posisi dekat dengan edge of the world! 
                 Cek apakah ada di edge atau tidak */
-            if(getDistanceBetween(this.bot, worldCenter)  + (1.5 * this.bot.getSize()) >= gameState.getWorld().radius){
+            if(getDistanceBetween(this.bot, worldCenter)  + (1.5 * this.bot.getSize()) >= gameState.getWorld().radius + 100){
                 playerAction.heading = getHeadingBetween(worldCenter);
                 System.out.println("Di ujung peta. Kembali ke pusat!");
             }
