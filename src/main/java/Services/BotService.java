@@ -191,21 +191,26 @@ public class BotService {
                     }
                 }
             }
-
+            
             if(torpedoList.size() > 0){
-                if((torpedoList.get(0).currentHeading + 90) % 360 == this.bot.currentHeading){
-                    playerAction.heading = (playerAction.heading + 90) % 360;
-                    System.out.println("Menghindar dari torpedo lawan");
-                }else if ((torpedoList.get(0).currentHeading - 90) % 360 == this.bot.currentHeading){
-                    playerAction.heading = (playerAction.heading - 90) % 360;
-                    System.out.println("Menghindar dari torpedo lawan");
-                }
-                if(gameState.getWorld().getCurrentTick() - shieldTick >= 20 && this.bot.getSize() > 50){
-                    System.out.println("Activate Shield");
-                    playerAction.action = PlayerActions.ACTIVATESHIELD;
-                    shieldTick = 0;
-                }else{
-                    shieldTick = gameState.getWorld().getCurrentTick();
+                if(getDistanceBetween(this.bot,torpedoList.get(0)) < 100){
+                    if((torpedoList.get(0).currentHeading + 90) % 360 == this.bot.currentHeading){
+                        playerAction.heading = (playerAction.heading + 90) % 360;
+                        System.out.println("Menghindar dari torpedo lawan");
+                    }else if ((torpedoList.get(0).currentHeading - 90) % 360 == this.bot.currentHeading){
+                        playerAction.heading = (playerAction.heading - 90) % 360;
+                        System.out.println("Menghindar dari torpedo lawan");
+                    }else if((torpedoList.get(0).currentHeading == this.bot.currentHeading)){
+                        playerAction.heading = (playerAction.heading + 90) % 360;
+                        System.out.println("Menghindar dari torpedo lawan");
+                    }
+                    if(gameState.getWorld().getCurrentTick() - shieldTick >= 20 && this.bot.getSize() > 50){
+                        System.out.println("Activate Shield");
+                        playerAction.action = PlayerActions.ACTIVATESHIELD;
+                        shieldTick = 0;
+                    }else{
+                        shieldTick = gameState.getWorld().getCurrentTick();
+                    }
                 }
             }
 
