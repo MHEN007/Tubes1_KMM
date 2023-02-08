@@ -50,6 +50,11 @@ public class BotService {
                 .sorted(Comparator.comparing(food -> getDistanceBetween(this.bot, food)))
                 .collect(Collectors.toList());
 
+            var superFoodList = gameState.getGameObjects().stream()
+                .filter(superF -> superF.getGameObjectType() == ObjectTypes.SUPER_FOOD)
+                .sorted(Comparator.comparing(superF -> getDistanceBetween(this.bot, superF)))
+                .collect(Collectors.toList());
+
             var gasList = gameState.getGameObjects().stream()
                 .filter(obs -> obs.getGameObjectType() == ObjectTypes.GAS_CLOUD)
                 .sorted(Comparator.comparing(obs -> getDistanceBetween(this.bot, obs)))
@@ -86,6 +91,11 @@ public class BotService {
             playerAction.heading = getHeadingBetween(foodList.get(0));
             System.out.println("MAKAN");
 
+            if(getDistanceBetween(bot, superFoodList.get(0)) >= getDistanceBetween(bot, foodList.get(0))){
+                playerAction.heading = getHeadingBetween(superFoodList.get(0));
+                System.out.println("MAKAN SUPER FOOD");
+            }
+
             /* Kalau muncul supernova */
             if(supernovapickList.size() > 0){
                 playerAction.heading = getHeadingBetween(supernovapickList.get(0));
@@ -121,7 +131,7 @@ public class BotService {
                 }
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
-                    if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() > 50){
+                    if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() > 50 && this.bot.getSize() > 100){
                         if(teleportTick == 0){
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             teleportTick = 1;
@@ -138,8 +148,11 @@ public class BotService {
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
                     System.out.println("KABUR");
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
-                    if(this.bot.getSize() > 100  || getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize()<= 100)
+                    if(this.bot.getSize() > 100  && getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize()<= 100)
                     {
+                        if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize()<= 50){
+                            playerAction.heading = enemyList.get(0).currentHeading;
+                        }
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
                         System.out.println("KABURRR");
@@ -157,11 +170,11 @@ public class BotService {
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     System.out.println("SERANG");
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
-                    if(this.bot.getSize() > 100 && enemyList.get(0).getSize() < 50) {
+                    if(this.bot.getSize() > 100 && enemyList.get(0).getSize() <= 100) {
                         System.out.println("TEMBAK TORPEDO");
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                     }
-                    if(getDistanceBetween(enemyList.get(0), bot) > 50) {
+                    if(getDistanceBetween(enemyList.get(0), bot) > 50 && this.bot.getSize() > 100) {
                         System.out.println("TELEPORT AJA");
                         if(teleportTick == 0){
                             playerAction.action = PlayerActions.FIRETELEPORT;
@@ -178,6 +191,10 @@ public class BotService {
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
                     System.out.println("KABUR, CARI MAKAN DULU");
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 180) % 360;
+                    if((getHeadingBetween(superFoodList.get(0)) + 180) %360 != enemyList.get(0).currentHeading){
+                        playerAction.heading = getHeadingBetween(superFoodList.get(0));
+                        System.out.println("MAKAN SUPER FOOD");
+                    }
                     if(getDistanceBetween(enemyList.get(0), bot) < 100){
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
