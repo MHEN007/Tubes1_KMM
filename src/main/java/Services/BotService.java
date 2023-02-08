@@ -116,7 +116,7 @@ public class BotService {
             /* Kondisi jika ada player obstacle dekat dengan kita 
              * Putar setiap 90 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
             */
-            if(getDistanceBetween(this.bot, gasList.get(0)) - this.bot.getSize() - gasList.get(0).getSize() < 150 || getDistanceBetween(this.bot, astList.get(0)) - this.bot.getSize() - astList.get(0).getSize() < 150 ) {
+            if(getDistanceBetween(this.bot, gasList.get(0)) < 150 || getDistanceBetween(this.bot, astList.get(0)) < 150 ) {
                 System.out.println("MENGHINDAR DARI GAS CLOUD / ASTEROID");
                 playerAction.heading = (playerAction.getHeading() + 90) % 360;
             }
