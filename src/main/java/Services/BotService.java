@@ -116,7 +116,7 @@ public class BotService {
             /* Kondisi jika ada player obstacle dekat dengan kita 
              * Putar setiap 90 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
             */
-            if(getDistanceBetween(this.bot, gasList.get(0)) - this.bot.getSize() - gasList.get(0).getSize() - this.bot.getSize() - gasList.get(0).getSize() < 100 || getDistanceBetween(this.bot, astList.get(0)) - this.bot.getSize() - astList.get(0).getSize() - this.bot.getSize() - astList.get(0).getSize() < 100 ) {
+            if(getDistanceBetween(this.bot, gasList.get(0)) < 100 ) {
                 System.out.println("MENGHINDAR DARI GAS CLOUD / ASTEROID");
                 playerAction.heading = (playerAction.getHeading() + 90) % 360;
             }
@@ -131,7 +131,7 @@ public class BotService {
                 }
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
-                    if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() < 100 && this.bot.getSize() > 150){
+                    if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() < 100 && this.bot.getSize() > 50){
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                         System.out.println("FIRE TORPEDOES!");
                     }
