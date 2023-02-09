@@ -84,20 +84,16 @@ public class BotService {
             //     .filter(supernovapick -> supernovapick.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP)
             //     .sorted(Comparator.comparing(supernovapick -> getDistanceBetween(this.bot, supernovapick)))
             //     .collect(Collectors.toList());
-            // var supernovapickList = gameState.getGameObjects().stream()
-            //     .filter(supernovapick -> supernovapick.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP)
-            //     .sorted(Comparator.comparing(supernovapick -> getDistanceBetween(this.bot, supernovapick)))
-            //     .collect(Collectors.toList());
 
             /* GREEDY BY POSITION */
 
             /* Default action, cari makan */
             playerAction.heading = getHeadingBetween(foodList.get(0));
-            action = "MAKAN";
+            System.out.println("MAKAN");
 
             if(getDistanceBetween(bot, superFoodList.get(0)) < getDistanceBetween(bot, foodList.get(0))){
                 playerAction.heading = getHeadingBetween(superFoodList.get(0));
-                action="MAKAN SUPER FOOD";
+                System.out.println("MAKAN SUPER FOOD");
             }
 
             /* Kalau muncul supernova */
@@ -121,13 +117,13 @@ public class BotService {
              * Putar setiap 90 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
             */
             if(getDistanceBetween(this.bot, gasList.get(0)) - this.bot.getSize() - gasList.get(0).getSize() - this.bot.getSize() - gasList.get(0).getSize() < 100 || getDistanceBetween(this.bot, astList.get(0)) - this.bot.getSize() - astList.get(0).getSize() - this.bot.getSize() - astList.get(0).getSize() < 100 ) {
-                action="MENGHINDAR DARI GAS CLOUD / ASTEROID";
+                System.out.println("MENGHINDAR DARI GAS CLOUD / ASTEROID");
                 playerAction.heading = (playerAction.getHeading() + 90) % 360;
             }
 
             /* Kondisi kalau ada player lain dekat dengan kita */
             if(getDistanceBetween(this.bot, enemyList.get(0))- this.bot.getSize() - enemyList.get(0).getSize() <= 200) {
-                action=("ADA PLAYER DEKAT KU");
+                System.out.println("ADA PLAYER DEKAT KU");
                 if(burner == true)
                 {
                     burner = false;
@@ -149,12 +145,12 @@ public class BotService {
                             teleportTick = 0; // reset teleportnya
                             /* Teleport  */
                             playerAction.action = PlayerActions.TELEPORT;
-                            action=("YEY BERHASIL TELEPORT");
+                            System.out.println("YEY BERHASIL TELEPORT");
                         }
                     }
-                    action=("SERANG");
+                    System.out.println("SERANG");
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
-                    action=("KABUR");
+                    System.out.println("KABUR");
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
                     if(this.bot.getSize() > 100  && getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() <= 150)
                     {
@@ -163,7 +159,7 @@ public class BotService {
                         }
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
-                        action=("KABURRR");
+                        System.out.println("KABURRR");
 
                         if(this.bot.getSize() > 150 && enemyList.get(0).getSize() - this.bot.getSize() < 30 && enemyList.get(0).getSize() - this.bot.getSize() > 30 )
                         {
@@ -176,20 +172,20 @@ public class BotService {
 
             /* Kalau tersisa cmn dua player lagi */
             if(enemyList.size() == 1){
-                action=("Tinggal berdua nih!");
+                System.out.println("Tinggal berdua nih!");
                 if(burner == true){
                     burner = false;
                     playerAction.action = PlayerActions.STOPAFTERBURNER;
                 }
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
-                    action=("SERANG");
+                    System.out.println("SERANG");
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
                     if(this.bot.getSize() > 100) {
                         System.out.println("TEMBAK TORPEDO");
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                     }
                     if(getDistanceBetween(enemyList.get(0), bot) > 50 && this.bot.getSize() > 100) {
-                        action=("TELEPORT AJA");
+                        System.out.println("TELEPORT AJA");
                         if(teleportTick == 0){
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             teleportTick = 1;
@@ -199,23 +195,23 @@ public class BotService {
                             teleportTick = 0; // reset teleportnya
                             /* Teleport  */
                             playerAction.action = PlayerActions.TELEPORT;
-                            action=("YEY BERHASIL TELEPORT");
+                            System.out.println("YEY BERHASIL TELEPORT");
                         }
                     }
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
-                    action=("KABUR, CARI MAKAN DULU");
+                    System.out.println("KABUR, CARI MAKAN DULU");
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 180) % 360;
                     if((getHeadingBetween(superFoodList.get(0)) + 180) %360 != enemyList.get(0).currentHeading){
                         playerAction.heading = getHeadingBetween(superFoodList.get(0));
-                        action=("MAKAN SUPER FOOD");
+                        System.out.println("MAKAN SUPER FOOD");
                     }
                     if(getDistanceBetween(enemyList.get(0), bot) < 50){
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
-                        action=("KENTUTTTT");
+                        System.out.println("KENTUTTTT");
                     }
                     if(this.bot.getSize() > 100) {
-                        action=("TEMBAK TORPEDO");
+                        System.out.println("TEMBAK TORPEDO");
                         playerAction.heading = getHeadingBetween(enemyList.get(0));
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                     }
@@ -235,19 +231,17 @@ public class BotService {
             /* Kondisi ketika supernova muncul */
             if(supernovabombList.size() > 0){
                 playerAction.heading = (getHeadingBetween(supernovabombList.get(0)) + 90) % 360;
-                action=("Menghindar dari supernova");
+                System.out.println("Menghindar dari supernova");
             }
 
             /* Kondisi jika posisi dekat dengan edge of the world! 
                 Cek apakah ada di edge atau tidak */
             if(getDistanceBetween(this.bot, worldCenter)  + (1.5 * this.bot.getSize()) >= gameState.getWorld().radius){
                 playerAction.heading = getHeadingBetween(worldCenter);
-                action=("Di ujung peta. Kembali ke pusat!");
+                System.out.println("Di ujung peta. Kembali ke pusat!");
             }
 
         }
-
-        System.out.println(action);
 
         this.playerAction = playerAction;
     }
