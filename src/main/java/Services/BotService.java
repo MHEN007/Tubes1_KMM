@@ -80,10 +80,10 @@ public class BotService {
                 .sorted(Comparator.comparing(supernovabomb -> getDistanceBetween(this.bot, supernovabomb)))
                 .collect(Collectors.toList());
 
-            var supernovapickList = gameState.getGameObjects().stream()
-                .filter(supernovapick -> supernovapick.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP)
-                .sorted(Comparator.comparing(supernovapick -> getDistanceBetween(this.bot, supernovapick)))
-                .collect(Collectors.toList());
+            // var supernovapickList = gameState.getGameObjects().stream()
+            //     .filter(supernovapick -> supernovapick.getGameObjectType() == ObjectTypes.SUPERNOVA_PICKUP)
+            //     .sorted(Comparator.comparing(supernovapick -> getDistanceBetween(this.bot, supernovapick)))
+            //     .collect(Collectors.toList());
 
             /* GREEDY BY POSITION */
 
@@ -91,27 +91,27 @@ public class BotService {
             playerAction.heading = getHeadingBetween(foodList.get(0));
             System.out.println("MAKAN");
 
-            if(getDistanceBetween(bot, superFoodList.get(0)) >= getDistanceBetween(bot, foodList.get(0))){
+            if(getDistanceBetween(bot, superFoodList.get(0)) < getDistanceBetween(bot, foodList.get(0))){
                 playerAction.heading = getHeadingBetween(superFoodList.get(0));
                 System.out.println("MAKAN SUPER FOOD");
             }
 
             /* Kalau muncul supernova */
-            if(supernovapickList.size() > 0){
-                playerAction.heading = getHeadingBetween(supernovapickList.get(0));
-                System.out.println("Mengambil supernova");
-                if (this.bot.getSize() > 50) {
-                    if(this.bot.supernovaAvailable){
-                        playerAction.action = PlayerActions.FIRESUPERNOVA;
-                        System.out.print("MENEMBAK SUPERNOVA");
-                        supernovaTick = gameState.getWorld().getCurrentTick();
-                        if (gameState.getWorld().getCurrentTick() - supernovaTick >= 20) {
-                            playerAction.action = PlayerActions.DETONATESUPERNOVA;
-                            System.out.print("MELEDUG");
-                        }
-                    }
-                }
-            }
+            // if(supernovapickList.size() > 0){
+            //     playerAction.heading = getHeadingBetween(supernovapickList.get(0));
+            //     System.out.println("Mengambil supernova");
+            //     if (this.bot.getSize() > 50) {
+            //         if(this.bot.supernovaAvailable){
+            //             playerAction.action = PlayerActions.FIRESUPERNOVA;
+            //             System.out.print("MENEMBAK SUPERNOVA");
+            //             supernovaTick = gameState.getWorld().getCurrentTick();
+            //             if (gameState.getWorld().getCurrentTick() - supernovaTick >= 20) {
+            //                 playerAction.action = PlayerActions.DETONATESUPERNOVA;
+            //                 System.out.print("MELEDUG");
+            //             }
+            //         }
+            //     }
+            // }
 
             /* Kondisi jika ada player obstacle dekat dengan kita 
              * Putar setiap 90 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
@@ -131,6 +131,10 @@ public class BotService {
                 }
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
+                    if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() < 100 && this.bot.getSize() > 150){
+                        playerAction.action = PlayerActions.FIRETORPEDOES;
+                        System.out.println("FIRE TORPEDOES!");
+                    }
                     if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() > 50 && this.bot.getSize() > 100){
                         if(teleportTick == 0){
                             playerAction.action = PlayerActions.FIRETELEPORT;
@@ -170,7 +174,7 @@ public class BotService {
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     System.out.println("SERANG");
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
-                    if(this.bot.getSize() > 100 && enemyList.get(0).getSize() <= 100) {
+                    if(this.bot.getSize() > 100) {
                         System.out.println("TEMBAK TORPEDO");
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                     }
@@ -210,29 +214,11 @@ public class BotService {
             
             if(torpedoList.size() > 0){
                 if(getDistanceBetween(this.bot,torpedoList.get(0)) < 100){
-                    if((torpedoList.get(0).currentHeading + 90) % 360 == this.bot.currentHeading){
-                        playerAction.heading = (playerAction.heading + 90) % 360;
-                        System.out.println("Menghindar dari torpedo lawan");
-                        playerAction.action = PlayerActions.ACTIVATESHIELD;
+                    if(getHeadingBetween(torpedoList.get(0)) == (torpedoList.get(0).currentHeading + 180) % 360)
+                    {
                         System.out.println("Activate Shield");
-                    }else if ((torpedoList.get(0).currentHeading - 90) % 360 == this.bot.currentHeading){
-                        playerAction.heading = (playerAction.heading - 90) % 360;
-                        System.out.println("Menghindar dari torpedo lawan");
                         playerAction.action = PlayerActions.ACTIVATESHIELD;
-                        System.out.println("Activate Shield");
-                    }else if((torpedoList.get(0).currentHeading == this.bot.currentHeading)){
-                        playerAction.heading = (playerAction.heading + 90) % 360;
-                        System.out.println("Menghindar dari torpedo lawan");
-                        playerAction.action = PlayerActions.ACTIVATESHIELD;
-                        System.out.println("Activate Shield");
                     }
-                    // if(gameState.getWorld().getCurrentTick() - shieldTick >= 20 && this.bot.getSize() > 50){
-                    //     System.out.println("Activate Shield");
-                    //     playerAction.action = PlayerActions.ACTIVATESHIELD;
-                    //     shieldTick = 0;
-                    // }else{
-                    //     shieldTick = gameState.getWorld().getCurrentTick();
-                    // }
                 }
             }
 
