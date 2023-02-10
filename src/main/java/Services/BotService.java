@@ -219,8 +219,11 @@ public class BotService {
             }
             
             if(torpedoList.size() > 0){
-                if(getDistanceBetween(this.bot,torpedoList.get(0)) < 100){
-                    if(getHeadingBetween(torpedoList.get(0)) == (torpedoList.get(0).currentHeading + 180) % 360)
+                if(getDistanceBetween(this.bot,torpedoList.get(0)) < 150){
+                    // System.out.println(getHeadingBetween(torpedoList.get(0)));
+                    // System.out.println((torpedoList.get(0).currentHeading + 180) % 360);
+                    int torpedoDirection = (((torpedoList.get(0).currentHeading + 180) % 360) - getHeadingBetween(torpedoList.get(0)));
+                    if(torpedoDirection != 180 || torpedoDirection != -180)
                     {
                         System.out.println("Activate Shield");
                         playerAction.action = PlayerActions.ACTIVATESHIELD;
