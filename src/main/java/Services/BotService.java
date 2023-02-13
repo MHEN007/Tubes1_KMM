@@ -117,7 +117,12 @@ public class BotService {
              * Putar setiap 90 derajat terhadap obstacle tsb lalu maju, berharap tidak nabrak
             */
             if(getDistanceBetween(this.bot, gasList.get(0)) < 100 ) {
-                System.out.println("MENGHINDAR DARI GAS CLOUD / ASTEROID");
+                System.out.println("MENGHINDAR DARI GAS CLOUD");
+                playerAction.heading = (playerAction.getHeading() + 90) % 360;
+            }
+
+            if(getDistanceBetween(this.bot, astList.get(0)) < 100 || getDistanceBetween(this.bot, astList.get(0)) < getDistanceBetween(this.bot, gasList.get(0))) {
+                System.out.println("MENGHINDAR DARI ASTEROID");
                 playerAction.heading = (playerAction.getHeading() + 90) % 360;
             }
 
