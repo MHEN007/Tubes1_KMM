@@ -31,4 +31,42 @@ Untuk menjalankan bot ini Anda memerlukan,
 
 # Cara menjalankan Bot
 1. Unduh seluruh repository ini sebuah folder dan letakkan dalam engine yang telah diunduh pada folder starter-bots
-2. TBC
+2. Akan terbentuk sebuah file dengan ekstensi .jar dengan nama KMMBot.jar pada folder target. File ini merupakan bot yang akan digunakan
+3. Jika belum melakukan pengaturan jumlah bot pada game engine, lakukan pengaturan pada file `appsettings.json` pada folder runner-publish dan logger-publish
+4. Pada runner game engine, masukkan command `java -jar path` dengan path yang mengarah pada `./target/KMMBot.jar` lalu jalankan runner. Contoh runner.bat yang dapat digunakan adalah
+```
+@echo off
+:: Game Runner
+cd ./runner-publish/
+start "" dotnet GameRunner.dll
+
+:: Game Engine
+cd ../engine-publish/
+timeout /t 1
+start "" dotnet Engine.dll
+
+:: Game Logger
+cd ../logger-publish/
+timeout /t 1
+start "" dotnet Logger.dll
+
+:: Bots
+cd ../reference-bot-publish/
+timeout /t 3
+start "" java -jar ../starter-bots/JavaBot/target/JavaBot.jar
+timeout /t 3
+start "" java -jar ../starter-bots/Tubes1_KMM/target/KMMBot.jar
+timeout /t 3
+start "" java -jar ../starter-bots/Tubes1_KMM/target/KMMBot.jar
+timeout /t 3
+start "" java -jar ../starter-bots/Tubes1_KMM/target/KMMBot.jar
+cd ../
+
+pause
+```
+Runner ini menggunakan 4 bot dengan target adalah KMMBot sebanyak 3 bot dan 1 JavaBot yang merupakan reference bot
+
+5. Setelah menjalankan game, visualizer dapat dibuka untuk melihat bot yang telah digunakan
+
+# Video Pendukung
+Dapat diakses pada tautan: TBA
