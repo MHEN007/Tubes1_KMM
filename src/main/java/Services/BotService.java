@@ -15,6 +15,8 @@ public class BotService {
     private int shieldTick = 0;
     private int teleportTick = 0;
     private int supernovaTick = 0;
+    private int tick;
+    private boolean changeTick = true;
 
     public BotService() {
         this.playerAction = new PlayerAction();
@@ -228,6 +230,15 @@ public class BotService {
                     // System.out.println(getHeadingBetween(torpedoList.get(0)));
                     // System.out.println((torpedoList.get(0).currentHeading + 180) % 360);
                     int torpedoDirection = (((torpedoList.get(0).currentHeading + 180) % 360) - getHeadingBetween(torpedoList.get(0)));
+                    
+                    // /* Search for torpedoes */
+                    // for(int i = this.bot.currentHeading; i < (this.bot.currentHeading + 359) % 360; i = i + 30){
+                    //     if(torpedoList.get(0).currentHeading == (i + 180) %360){
+                    //         System.out.println("Activate Shield");
+                    //         playerAction.action = PlayerActions.ACTIVATESHIELD;
+                    //         break;
+                    //     }
+                    // }
                     if(torpedoDirection != 180 || torpedoDirection != -180)
                     {
                         System.out.println("Activate Shield");
@@ -251,7 +262,18 @@ public class BotService {
 
         }
 
-        this.playerAction = playerAction;
+        if(gameState.getWorld().getCurrentTick() != null){
+            if(changeTick){
+                tick = gameState.getWorld().getCurrentTick();
+                changeTick = false;
+                System.out.println("CHANGE TICK");
+            }
+            if(gameState.getWorld().getCurrentTick() != tick){
+                this.playerAction = playerAction;
+                System.out.println("COMPUTE");
+                changeTick = true;
+            }
+        }
     }
 
     public GameState getGameState() {
