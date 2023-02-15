@@ -12,10 +12,8 @@ public class BotService {
     private GameState gameState;
     private GameObject worldCenter;
     private boolean burner = false;
-    private int shieldTick = 0;
     private int teleportTick = 0;
-    private int supernovaTick = 0;
-    private int tick;
+    private int tick; /* buat benerin game engine */
     private boolean changeTick = true;
 
     public BotService() {
@@ -42,7 +40,6 @@ public class BotService {
 
     public void computeNextPlayerAction(PlayerAction playerAction) {
         Position centerPoint = new Position(0,0);
-        String action = "";
         worldCenter = new GameObject(null, null, null, null, centerPoint, null, null, null);
         playerAction.action = PlayerActions.FORWARD;
         System.out.println("TIME TO COMPUTE AT TICK " + gameState.getWorld().getCurrentTick());
@@ -139,11 +136,13 @@ public class BotService {
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
                     if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() < 100 && this.bot.getSize() > 50){
+                        playerAction.heading = getHeadingBetween(enemyList.get(0));
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                         System.out.println("FIRE TORPEDOES!");
                     }
                     if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() > 50 && this.bot.getSize() > 100){
                         if(teleportTick == 0){
+                            playerAction.heading = getHeadingBetween(enemyList.get(0));
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             teleportTick = 1;
                         }else if(teleportTick >= 1 && teleportTick < 10){
@@ -157,9 +156,8 @@ public class BotService {
                     }
                     System.out.println("SERANG");
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
-                    System.out.println("KABUR");
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
-                    if(this.bot.getSize() > 100  && getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() <= 150)
+                    if(this.bot.getSize() > 85  && getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() <= 150)
                     {
                         if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() <= 100){
                             playerAction.heading = enemyList.get(0).currentHeading;
@@ -187,13 +185,15 @@ public class BotService {
                 if(enemyList.get(0).getSize() < this.bot.getSize()) {
                     System.out.println("SERANG");
                     playerAction.heading = getHeadingBetween(enemyList.get(0));
-                    if(this.bot.getSize() > 100) {
+                    if(this.bot.getSize() > 85) {
                         System.out.println("TEMBAK TORPEDO");
+                        playerAction.heading = getHeadingBetween(enemyList.get(0));
                         playerAction.action = PlayerActions.FIRETORPEDOES;
                     }
-                    if(getDistanceBetween(enemyList.get(0), bot) > 50 && this.bot.getSize() > 100) {
+                    if(getDistanceBetween(enemyList.get(0), bot) > 50 && this.bot.getSize() > 85) {
                         System.out.println("TELEPORT AJA");
                         if(teleportTick == 0){
+                            playerAction.heading = getHeadingBetween(enemyList.get(0));
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             teleportTick = 1;
                         }else if(teleportTick >= 1 && teleportTick < 10){
@@ -212,12 +212,11 @@ public class BotService {
                         playerAction.heading = getHeadingBetween(superFoodList.get(0));
                         System.out.println("MAKAN SUPER FOOD");
                     }
-                    if(getDistanceBetween(enemyList.get(0), bot) < 50){
+                    if(getDistanceBetween(enemyList.get(0), bot)- this.bot.getSize() - enemyList.get(0).getSize() < 150){
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
-                        System.out.println("KENTUTTTT");
-                    }
-                    if(this.bot.getSize() > 100) {
+                        System.out.println("KABURRR");
+                    } else if(this.bot.getSize() > 85) {
                         System.out.println("TEMBAK TORPEDO");
                         playerAction.heading = getHeadingBetween(enemyList.get(0));
                         playerAction.action = PlayerActions.FIRETORPEDOES;
@@ -239,7 +238,7 @@ public class BotService {
                     //         break;
                     //     }
                     // }
-                    if(torpedoDirection != 180 || torpedoDirection != -180)
+                    if((torpedoDirection != 180 || torpedoDirection != -180) && this.bot.getSize() > 75)
                     {
                         System.out.println("Activate Shield");
                         playerAction.action = PlayerActions.ACTIVATESHIELD;
