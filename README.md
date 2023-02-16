@@ -69,4 +69,4 @@ Runner ini menggunakan 4 bot dengan target adalah KMMBot sebanyak 3 bot dan 1 Ja
 5. Setelah menjalankan game, visualizer dapat dibuka untuk melihat bot yang telah digunakan
 
 # Video Pendukung
-Dapat diakses pada tautan: TBA
+Dapat diakses pada tautan: https://youtu.be/TQM4bUWjono
