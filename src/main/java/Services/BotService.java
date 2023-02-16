@@ -205,7 +205,7 @@ public class BotService {
                     }
                 }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
                     System.out.println("KABUR, CARI MAKAN DULU");
-                    playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 180) % 360;
+                    playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
                     if((getHeadingBetween(superFoodList.get(0)) + 180) %360 != enemyList.get(0).currentHeading){
                         playerAction.heading = getHeadingBetween(superFoodList.get(0));
                         System.out.println("MAKAN SUPER FOOD");
