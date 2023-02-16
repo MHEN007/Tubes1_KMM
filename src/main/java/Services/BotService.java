@@ -159,9 +159,7 @@ public class BotService {
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
                     if(this.bot.getSize() > 85  && getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() <= 150)
                     {
-                        if(getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() <= 100){
-                            playerAction.heading = enemyList.get(0).currentHeading;
-                        }
+                        playerAction.heading = enemyList.get(0).currentHeading;
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
                         System.out.println("KABURRR");
@@ -213,6 +211,7 @@ public class BotService {
                         System.out.println("MAKAN SUPER FOOD");
                     }
                     if(getDistanceBetween(enemyList.get(0), bot)- this.bot.getSize() - enemyList.get(0).getSize() < 150){
+                        playerAction.heading = enemyList.get(0).currentHeading;
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
                         System.out.println("KABURRR");
