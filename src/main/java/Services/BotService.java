@@ -211,7 +211,7 @@ public class BotService {
                         System.out.println("MAKAN SUPER FOOD");
                     }
                     if(getDistanceBetween(enemyList.get(0), bot)- this.bot.getSize() - enemyList.get(0).getSize() < 150){
-                        playerAction.heading = enemyList.get(0).currentHeading;
+                        playerAction.heading = (getHeadingBetween(enemyList.get(0)) + new Random().nextInt(140,180)) % 360; /* Kalo jadi masalah revert aja jadi + 90 */
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
                         System.out.println("KABURRR");
