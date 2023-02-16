@@ -145,9 +145,9 @@ public class BotService {
                             playerAction.heading = getHeadingBetween(enemyList.get(0));
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             teleportTick = 1;
-                        }else if(teleportTick >= 1 && teleportTick < 10){
+                        }if(teleportTick >= 1 && teleportTick < 10){
                             teleportTick++;
-                        }else if(teleportTick == 10){
+                        }if(teleportTick == 10){
                             teleportTick = 0; // reset teleportnya
                             /* Teleport  */
                             playerAction.action = PlayerActions.TELEPORT;
@@ -155,7 +155,7 @@ public class BotService {
                         }
                     }
                     System.out.println("SERANG");
-                }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
+                }if(enemyList.get(0).getSize() >= this.bot.getSize()){
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
                     if(this.bot.getSize() > 85  && getDistanceBetween(enemyList.get(0), bot) - this.bot.getSize() - enemyList.get(0).getSize() <= 150)
                     {
@@ -194,16 +194,16 @@ public class BotService {
                             playerAction.heading = getHeadingBetween(enemyList.get(0));
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             teleportTick = 1;
-                        }else if(teleportTick >= 1 && teleportTick < 10){
+                        }if(teleportTick >= 1 && teleportTick < 10){
                             teleportTick++;
-                        }else if(teleportTick == 10){
+                        }if(teleportTick == 10){
                             teleportTick = 0; // reset teleportnya
                             /* Teleport  */
                             playerAction.action = PlayerActions.TELEPORT;
                             System.out.println("YEY BERHASIL TELEPORT");
                         }
                     }
-                }else if(enemyList.get(0).getSize() >= this.bot.getSize()){
+                }if(enemyList.get(0).getSize() >= this.bot.getSize()){
                     System.out.println("KABUR, CARI MAKAN DULU");
                     playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90) % 360;
                     if((getHeadingBetween(superFoodList.get(0)) + 180) %360 != enemyList.get(0).currentHeading){
@@ -215,7 +215,7 @@ public class BotService {
                         playerAction.action = PlayerActions.STARTAFTERBURNER;
                         burner = true;
                         System.out.println("KABURRR");
-                    } else if(this.bot.getSize() > 85) {
+                    }if(this.bot.getSize() > 85) {
                         System.out.println("TEMBAK TORPEDO");
                         playerAction.heading = getHeadingBetween(enemyList.get(0));
                         playerAction.action = PlayerActions.FIRETORPEDOES;
