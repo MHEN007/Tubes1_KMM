@@ -167,7 +167,7 @@ public class BotService {
                                     playerAction.action = PlayerActions.FIRETELEPORT;
                                     action="FIRE TELEPORTER";
                                 }
-                                if(this.bot.getSize() > 75){
+                                if(getDistanceBetween(this.bot, enemyList.get(0)) < 150 && getDistanceBetween(this.bot, enemyList.get(0)) > 50){
                                     this.playerAction.heading = getHeadingBetween(enemyList.get(0));
                                     playerAction.action = PlayerActions.FIRETORPEDOES;
                                     action = "FIRE TORPEDOES";
@@ -218,7 +218,7 @@ public class BotService {
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             action="FIRE TELEPORTER";
                         }
-                        if(getDistanceBetween(this.bot, enemyList.get(0)) < 150){
+                        if(getDistanceBetween(this.bot, enemyList.get(0)) < 150 && getDistanceBetween(this.bot, enemyList.get(0)) > 50){
                             this.playerAction.heading = getHeadingBetween(enemyList.get(0));
                             playerAction.action = PlayerActions.FIRETORPEDOES;
                             action = "FIRE TORPEDOES";
@@ -226,6 +226,7 @@ public class BotService {
                             this.playerAction.heading = getHeadingBetween(enemyList.get(0));
                             action="HEADING TOWARDS ENEMY";
                         }
+                        
                     }else{
                         if(getDistanceBetween(enemyList.get(0), this.bot) - this.bot.getSize() - enemyList.get(0).getSize() < 50 && this.bot.getSize() > 50){
                             /* Aktivasi afterburner */
