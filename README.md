@@ -24,7 +24,7 @@ Pada kasus bot berada di ujung peta, maka bot akan kembali ke dalam peta dengan 
 
 # Prerequisites Menjalankan
 Untuk menjalankan bot ini Anda memerlukan,
-1. Java SDK (minimal versi 11. Bot dikembangkan pada versi 19.0.1)
+1. Java SDK (Bot dikembangkan pada versi 19.0.1)
 2. .NET 3.1.0 dan .NET Runtime 5.0 untuk menjalankan game engine
 3. Maven untuk membuat file .JAR
 4. Game Engine yang dapat diunduh pada tautan: <a> https://github.com/EntelectChallenge/2021-Galaxio/releases/tag/2021.3.2 </a>
