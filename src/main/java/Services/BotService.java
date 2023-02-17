@@ -16,6 +16,9 @@ public class BotService {
     private int tick; /* buat benerin game engine */
     private boolean changeTick = true;
     private boolean teleporter = false;
+    private double distTorpedo1 = 0;
+    private double distTorpedo2 = 0;
+    private boolean torpedo = false;
 
     public BotService() {
         this.playerAction = new PlayerAction();
@@ -129,12 +132,12 @@ public class BotService {
                 /* Perhatikan asteroid dan gas cloud terdekat. Jika ada salah satu dari mereka yang dekat maka berputar */
                 if(getDistanceBetween(this.bot, astList.get(0)) - this.bot.getSize() - astList.get(0).getSize() < 50 && 
                     getDistanceBetween(this.bot, astList.get(0)) <= getDistanceBetween(this.bot, gasList.get(0))){
-                    playerAction.heading = (this.playerAction.heading + 90) %360;
+                    playerAction.heading = (playerAction.getHeading() + 90) %360;
                     playerAction.action = PlayerActions.FORWARD;
                     action = ("Menghindari asteroid");
                 }else if(getDistanceBetween(this.bot, astList.get(0)) - this.bot.getSize() - gasList.get(0).getSize() < 50 &&
                     getDistanceBetween(this.bot, gasList.get(0)) < getDistanceBetween(this.bot, astList.get(0))){
-                    playerAction.heading = (this.playerAction.heading + 90) %360;
+                    playerAction.heading = (playerAction.getHeading() + 90) %360;
                     playerAction.action = PlayerActions.FORWARD;
                     action = ("Menghindari gas list");
                 }
@@ -143,8 +146,8 @@ public class BotService {
                 * Pecah jadi 2 kondisi, jika akan menyerang dengan jumlah bot musuh > 2
                 * atau jumlah bot musuh tepat = 1
                 */
-                if(enemyList.size() > 1){
-                    if(enemyList.get(0).getSize() < 250){
+                if(enemyList.size() > 1 ){
+                    if(getDistanceBetween(this.bot, enemyList.get(0)) < 250){
                         /* Cek ukuran dari bot kita dengan bot musuh terdekat */
                         if(this.bot.getSize() > enemyList.get(0).getSize()){
                             /* Untuk kondisi ukurannya lebih besar, lakukan aksi default yaitu mengarah ke musuh */
@@ -163,7 +166,8 @@ public class BotService {
                                     teleportTick = 1;/* Dikomputasikan di luar block ini */
                                     playerAction.action = PlayerActions.FIRETELEPORT;
                                     action="FIRE TELEPORTER";
-                                }else if(getDistanceBetween(this.bot, enemyList.get(0)) < 50){
+                                }
+                                if(this.bot.getSize() > 75){
                                     this.playerAction.heading = getHeadingBetween(enemyList.get(0));
                                     playerAction.action = PlayerActions.FIRETORPEDOES;
                                     action = "FIRE TORPEDOES";
@@ -182,13 +186,14 @@ public class BotService {
                             * 2. Serang jika ukurannya tidak jauh beda
                             * 3. Kabur saja tanpa after burner (default)
                             */
-                            if(getDistanceBetween(enemyList.get(0), this.bot) - this.bot.getSize() - enemyList.get(0).getSize() < 50){
+                            if(getDistanceBetween(enemyList.get(0), this.bot) - this.bot.getSize() - enemyList.get(0).getSize() < 50 && this.bot.getSize() > 50){
                                 /* Aktivasi afterburner */
                                 burner = true;
                                 playerAction.action = PlayerActions.STARTAFTERBURNER;
-                                playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 270) % 360;
+                                playerAction.heading = (enemyList.get(0).currentHeading + 90) % 360;
                                 action="START AFTER BURNER";
-                            }else if(getDistanceBetween(enemyList.get(0), this.bot) - this.bot.getSize() - enemyList.get(0).getSize() < 50 && this.bot.getSize() > 75){
+                            }
+                            if(this.bot.getSize() > 75){
                                 action="FIRE TORPEDOES, TO DEFEND";
                                 playerAction.action = PlayerActions.FIRETORPEDOES;
                                 playerAction.heading = getHeadingBetween(enemyList.get(0));
@@ -198,7 +203,7 @@ public class BotService {
                             }
                         }
                     }
-                }else{
+                }else if(enemyList.size() == 1){
                     /* Hanya tersisa 2 player */
                     if(this.bot.getSize() > enemyList.get(0).getSize()){
                         /* Cek apakah terlalu jauh atau tidak antara bot dengan musuh 
@@ -212,10 +217,8 @@ public class BotService {
                             teleportTick = 1;/* Dikomputasikan di luar block ini */
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             action="FIRE TELEPORTER";
-                            this.playerAction.heading = getHeadingBetween(enemyList.get(0));
-                            playerAction.action = PlayerActions.FIRETORPEDOES;
-                            action = "FIRE TORPEDOES";
-                        }else if(this.bot.getSize() > enemyList.get(0).getSize() + 10 && getDistanceBetween(this.bot, enemyList.get(0)) < 150){
+                        }
+                        if(getDistanceBetween(this.bot, enemyList.get(0)) < 150){
                             this.playerAction.heading = getHeadingBetween(enemyList.get(0));
                             playerAction.action = PlayerActions.FIRETORPEDOES;
                             action = "FIRE TORPEDOES";
@@ -224,18 +227,17 @@ public class BotService {
                             action="HEADING TOWARDS ENEMY";
                         }
                     }else{
-                        if(getDistanceBetween(enemyList.get(0), this.bot) - this.bot.getSize() - enemyList.get(0).getSize() < 50){
+                        if(getDistanceBetween(enemyList.get(0), this.bot) - this.bot.getSize() - enemyList.get(0).getSize() < 50 && this.bot.getSize() > 50){
                             /* Aktivasi afterburner */
                             burner = true;
                             playerAction.action = PlayerActions.STARTAFTERBURNER;
-                            playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 270) % 360;
+                            playerAction.heading = (enemyList.get(0).currentHeading + 90) % 360;
                             action="START AFTER BURNER";
-                        }else if(getDistanceBetween(enemyList.get(0), this.bot) - this.bot.getSize() - enemyList.get(0).getSize() >= 50){
-                            if(this.bot.getSize() + 10 > enemyList.get(0).getSize() && this.bot.getSize() > 75){
-                                action="FIRE TORPEDOES, TO DEFEND";
-                                playerAction.action = PlayerActions.FIRETORPEDOES;
-                                playerAction.heading = getHeadingBetween(enemyList.get(0));
-                            }
+                        }
+                        if(this.bot.getSize() > 75){
+                            action="FIRE TORPEDOES, TO DEFEND";
+                            playerAction.action = PlayerActions.FIRETORPEDOES;
+                            playerAction.heading = getHeadingBetween(enemyList.get(0));
                         }else{
                             action="RUN AWAY";
                             playerAction.heading = (getHeadingBetween(enemyList.get(0)) + 90)%360;
@@ -246,15 +248,19 @@ public class BotService {
 
                 /* Aksi menyalakan shield */
                 if(torpedoList.size() > 0){
-                    if(getDistanceBetween(this.bot,torpedoList.get(0)) < 150){
-                        // System.out.println(getHeadingBetween(torpedoList.get(0)));
-                        // System.out.println((torpedoList.get(0).currentHeading + 180) % 360);
-                        int torpedoDirection = (((torpedoList.get(0).currentHeading + 180) % 360) - getHeadingBetween(torpedoList.get(0)));
-
-                        if((torpedoDirection != 180 || torpedoDirection != -180) && this.bot.getSize() > 75)
-                        {
-                            System.out.println("Activate Shield");
-                            playerAction.action = PlayerActions.ACTIVATESHIELD;
+                    if(getDistanceBetween(this.bot,torpedoList.get(0)) < 150) {
+                        if (!torpedo) {
+                            distTorpedo1 = getDistanceBetween(torpedoList.get(0), bot);
+                            torpedo = true;
+                        } else {
+                            distTorpedo2 = getDistanceBetween(torpedoList.get(0), bot);
+                            if (distTorpedo1 > distTorpedo2) {
+                                System.out.println("Activate Shield");
+                                playerAction.action = PlayerActions.ACTIVATESHIELD;
+                                torpedo = false;
+                            } else {
+                                torpedo = false;
+                            }
                         }
                     }
                 }
