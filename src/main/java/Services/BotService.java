@@ -45,7 +45,7 @@ public class BotService {
     public void computeNextPlayerAction(PlayerAction playerAction) {
         Position centerPoint = new Position(0,0);
         String action = "";
-        worldCenter = new GameObject(null, null, null, null, centerPoint, null, null, null);
+        worldCenter = new GameObject(null, null, null, null, centerPoint, null, null, null, null, null, null);
         playerAction.action = PlayerActions.FORWARD;
         System.out.println("TIME TO COMPUTE AT TICK " + gameState.getWorld().getCurrentTick());
         if(!this.gameState.getGameObjects().isEmpty()){

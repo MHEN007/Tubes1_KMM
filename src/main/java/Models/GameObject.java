@@ -10,18 +10,24 @@ public class GameObject {
   public Integer currentHeading;
   public Position position;
   public ObjectTypes gameObjectType;
+  public Integer effects;
   public Integer torpedoSalvo;
-  public Boolean supernovaAvailable;
+  public Integer supernovaAvailable;
+  public Integer fireTeleport;
+  public Integer shield;
 
-  public GameObject(UUID id, Integer size, Integer speed, Integer currentHeading, Position position, ObjectTypes gameObjectType, Integer torpedoSalvo, Boolean supernovaAvailable) {
+  public GameObject(UUID id, Integer size, Integer speed, Integer currentHeading, Position position, ObjectTypes gameObjectType, Integer effects, Integer torpedoSalvo, Integer supernovaAvailable, Integer fireTeleport, Integer shield) {
     this.id = id;
     this.size = size;
     this.speed = speed;
     this.currentHeading = currentHeading;
     this.position = position;
     this.gameObjectType = gameObjectType;
+    this.effects = effects;
     this.torpedoSalvo = torpedoSalvo;
     this.supernovaAvailable = supernovaAvailable;
+    this.fireTeleport = fireTeleport;
+    this.shield = shield;
   }
 
   public UUID getId() {
@@ -67,6 +73,10 @@ public class GameObject {
   public static GameObject FromStateList(UUID id, List<Integer> stateList)
   {
     Position position = new Position(stateList.get(4), stateList.get(5));
-    return new GameObject(id, stateList.get(0), stateList.get(1), stateList.get(2), position, ObjectTypes.valueOf(stateList.get(3)), stateList.get(6), false);
+    if(stateList.size() != 11){
+      return new GameObject(id, stateList.get(0), stateList.get(1), stateList.get(2), position, ObjectTypes.valueOf(stateList.get(3)), null, null, null, null, null);
+    }else{
+      return new GameObject(id, stateList.get(0), stateList.get(1), stateList.get(2), position, ObjectTypes.valueOf(stateList.get(3)), stateList.get(6), stateList.get(7), stateList.get(8), stateList.get(9), stateList.get(10));
+    }
   }
 }
