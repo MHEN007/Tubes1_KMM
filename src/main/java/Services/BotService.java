@@ -42,7 +42,7 @@ public class BotService {
         playerAction.action = PlayerActions.FORWARD;
         playerAction.heading = new Random().nextInt(360);
 
-        this.playerAction.action = playerAction.action
+        this.playerAction.action = playerAction.action;
     }
 
     public GameState getGameState() {
