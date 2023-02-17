@@ -167,7 +167,7 @@ public class BotService {
                                     playerAction.action = PlayerActions.FIRETELEPORT;
                                     action="FIRE TELEPORTER";
                                 }
-                                if(getDistanceBetween(this.bot, enemyList.get(0)) < 150 && getDistanceBetween(this.bot, enemyList.get(0)) > 50){
+                                if(getDistanceBetween(this.bot, enemyList.get(0)) < 150 && getDistanceBetween(this.bot, enemyList.get(0)) > 30){
                                     this.playerAction.heading = getHeadingBetween(enemyList.get(0));
                                     playerAction.action = PlayerActions.FIRETORPEDOES;
                                     action = "FIRE TORPEDOES";
@@ -218,7 +218,7 @@ public class BotService {
                             playerAction.action = PlayerActions.FIRETELEPORT;
                             action="FIRE TELEPORTER";
                         }
-                        if(getDistanceBetween(this.bot, enemyList.get(0)) < 150 && getDistanceBetween(this.bot, enemyList.get(0)) > 50){
+                        if(getDistanceBetween(this.bot, enemyList.get(0)) < 150 && getDistanceBetween(this.bot, enemyList.get(0)) > 30){
                             this.playerAction.heading = getHeadingBetween(enemyList.get(0));
                             playerAction.action = PlayerActions.FIRETORPEDOES;
                             action = "FIRE TORPEDOES";
